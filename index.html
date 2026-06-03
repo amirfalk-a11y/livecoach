@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Coaching CF — Studi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+:root {
+  --blue:   #59B9C7;
+  --orange: #EE704C;
+  --yellow: #FFB527;
+  --dark:   #3C3C3B;
+  --bg:     #F4F4F3;
+  --surf:   #FFFFFF;
+  --bord:   rgba(60,60,59,0.11);
+  --bord2:  rgba(60,60,59,0.20);
+  --txt:    #3C3C3B;
+  --muted:  #888887;
+  --light:  #C4C4C3;
+  --r:      8px;
+  --rl:     12px;
+  --sh:     0 1px 3px rgba(0,0,0,0.05),0 1px 2px rgba(0,0,0,0.03);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);font-size:14px;line-height:1.5;min-height:100vh}
+/* Layout */
+.layout{display:flex;min-height:100vh}
+.sidebar{width:210px;background:var(--dark);flex-shrink:0;display:flex;flex-direction:column}
+.sb-logo{padding:18px 18px 14px;border-bottom:1px solid rgba(255,255,255,0.07)}
+.sb-brand{font-size:14px;font-weight:600;color:var(--blue);letter-spacing:-.01em}
+.sb-sub{font-size:11px;color:rgba(255,255,255,0.3);margin-top:2px}
+.sb-nav{padding:10px 7px;flex:1}
+.nav-item{display:flex;align-items:center;gap:8px;padding:8px 11px;border-radius:var(--r);cursor:pointer;color:rgba(255,255,255,0.5);font-size:13px;font-weight:500;transition:all .15s;margin-bottom:1px;border:none;background:none;width:100%;text-align:left;font-family:'Inter',sans-serif}
+.nav-item:hover{color:rgba(255,255,255,.8);background:rgba(255,255,255,.05)}
+.nav-item.active{color:#fff;background:rgba(89,185,199,.18)}
+.nav-item .ti{font-size:15px}
+.sb-foot{padding:10px 18px 14px;border-top:1px solid rgba(255,255,255,.07);font-size:10px;color:rgba(255,255,255,.2)}
+.main{flex:1;overflow:hidden;display:flex;flex-direction:column}
+.topbar{background:var(--surf);border-bottom:1px solid var(--bord);padding:0 22px;height:50px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar-title{font-size:14px;font-weight:600}
+.topbar-meta{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.status-dot{width:6px;height:6px;border-radius:50%;background:#4CAF50;display:inline-block}
+.content{flex:1;overflow-y:auto;padding:22px}
+/* Panels */
+.panel{display:none}.panel.active{display:block}
+/* Chips */
+.chips{display:flex;gap:5px;margin-bottom:18px;flex-wrap:wrap}
+.chip{padding:5px 13px;border-radius:99px;border:1px solid var(--bord2);background:var(--surf);font-size:12px;font-weight:500;cursor:pointer;color:var(--muted);transition:all .15s;font-family:'Inter',sans-serif}
+.chip:hover{border-color:var(--blue);color:var(--blue)}
+.chip.active-blue  {background:#EAF7F9;color:#167A87;border-color:var(--blue)}
+.chip.active-orange{background:#FFF1EB;color:#9E3D17;border-color:var(--orange)}
+.chip.active-yellow{background:#FFF8E6;color:#8F6200;border-color:var(--yellow)}
+/* Fields */
+.ctx-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.flabel{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+select,input[type=text]{width:100%;padding:7px 10px;border:1px solid var(--bord2);border-radius:var(--r);background:var(--surf);font-family:'Inter',sans-serif;font-size:13px;color:var(--txt);outline:none;transition:border-color .15s}
+select:focus,input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(89,185,199,.1)}
+/* Objection grid */
+.slabel{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:9px}
+.obj-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px}
+.obj-btn{padding:8px 10px;border:1px solid var(--bord);border-radius:var(--r);background:var(--surf);cursor:pointer;text-align:left;font-size:12.5px;color:var(--txt);line-height:1.4;display:flex;align-items:flex-start;gap:6px;transition:all .15s;font-family:'Inter',sans-serif;box-shadow:var(--sh)}
+.obj-btn:hover{border-color:var(--blue);background:#EAF7F9}
+.obj-btn.selected{border-color:var(--blue);background:#EAF7F9;color:#167A87}
+.obj-btn .ti{font-size:13px;color:var(--muted);flex-shrink:0;margin-top:2px}
+.obj-btn.selected .ti{color:var(--blue)}
+.custom-row{display:flex;gap:7px;margin-bottom:18px}
+.custom-row input{flex:1}
+/* Buttons */
+.btn-primary{padding:7px 15px;border-radius:var(--r);border:none;background:var(--blue);color:#fff;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px;font-family:'Inter',sans-serif;transition:background .15s;white-space:nowrap}
+.btn-primary:hover{background:#45a8b7}
+.btn-primary:disabled{background:var(--light);cursor:not-allowed}
+.btn-ghost{padding:5px 9px;border-radius:var(--r);border:1px solid var(--bord2);background:transparent;cursor:pointer;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:4px;font-family:'Inter',sans-serif;transition:all .15s}
+.btn-ghost:hover{background:var(--bg);color:var(--txt)}
+.btn-out{padding:5px 9px;border-radius:var(--r);border:1px solid var(--bord2);background:transparent;cursor:pointer;font-size:12px;color:var(--txt);display:flex;align-items:center;gap:4px;font-family:'Inter',sans-serif;transition:all .15s}
+.btn-out:hover{border-color:var(--blue);color:var(--blue);background:var(--bg)}
+/* Response */
+.resp-card{background:var(--surf);border:1px solid var(--bord);border-radius:var(--rl);padding:15px;margin-bottom:10px;box-shadow:var(--sh)}
+.resp-header{display:flex;align-items:center;gap:7px;margin-bottom:11px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;padding:2px 7px;border-radius:99px}
+.badge-lll{background:#EAF7F9;color:#167A87}
+.badge-alt{background:#FFF1EB;color:#9E3D17}
+.badge-cpf{background:#FFF8E6;color:#8F6200}
+.badge-tag{background:#F0F0EF;color:var(--muted)}
+.resp-obj{font-size:12px;color:var(--muted);flex:1;font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.resp-body{font-size:14px;line-height:1.75;color:var(--txt);white-space:pre-wrap}
+.resp-actions{display:flex;gap:6px;margin-top:11px;flex-wrap:wrap}
+/* Loading */
+.loading{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px;padding:10px 0}
+.dots{display:flex;gap:3px}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--blue);animation:blink 1.2s ease-in-out infinite}
+.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+/* RRR card */
+.rrr-card{background:var(--surf);border:1px solid var(--bord);border-radius:var(--rl);overflow:hidden;margin-bottom:18px;box-shadow:var(--sh)}
+.rrr-row{display:grid;grid-template-columns:46px 1fr;border-bottom:1px solid var(--bord)}
+.rrr-row:last-child{border-bottom:none}
+.rrr-letter{display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700}
+.r1{color:var(--blue);background:#EAF7F9}.r2{color:var(--orange);background:#FFF1EB}.r3{color:var(--yellow);background:#FFFBF0}
+.rrr-content{padding:11px 13px}
+.rrr-label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.rrr-text{font-size:13px;color:var(--txt);line-height:1.5}
+.rrr-ex{font-size:12px;color:var(--muted);font-style:italic;margin-top:3px}
+/* Croyances */
+.croyances{display:flex;flex-direction:column;gap:5px;margin-bottom:18px}
+.croyance{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)}
+.croyance-h{display:flex;align-items:center;gap:9px;padding:9px 11px;cursor:pointer;transition:background .15s}
+.croyance-h:hover{background:var(--bg)}
+.croyance-n{width:20px;height:20px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--muted);flex-shrink:0}
+.croyance-t{flex:1;font-size:13px;color:var(--txt)}
+.croyance-b{display:none;padding:9px 11px 11px 40px;font-size:13px;color:var(--muted);line-height:1.6;border-top:1px solid var(--bord);background:var(--bg)}
+.croyance-b.open{display:block}
+/* Posture */
+.posture-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:18px}
+.posture-card{background:var(--surf);border:1px solid var(--bord);border-radius:var(--rl);padding:13px;box-shadow:var(--sh)}
+.posture-icon{font-size:20px;margin-bottom:7px}
+.posture-title{font-size:13px;font-weight:600;color:var(--txt);margin-bottom:2px}
+.posture-text{font-size:12px;color:var(--muted);line-height:1.5}
+/* Hook steps */
+.hook-card{background:var(--surf);border:1px solid var(--bord);border-radius:var(--rl);overflow:hidden;margin-bottom:14px;box-shadow:var(--sh)}
+.hook-step{display:flex;gap:11px;padding:11px 13px;border-bottom:1px solid var(--bord)}
+.hook-step:last-child{border-bottom:none}
+.hook-n{width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.hook-title{font-size:13px;font-weight:500;color:var(--txt);margin-bottom:2px}
+.hook-ex{font-size:12px;color:var(--muted);font-style:italic}
+/* Error card */
+.err-card{background:var(--surf);border:1px solid var(--bord);border-radius:var(--rl);padding:13px;margin-bottom:12px;box-shadow:var(--sh)}
+.err-row{display:flex;gap:7px;align-items:flex-start;margin-bottom:5px}
+.err-row:last-child{margin-bottom:0}
+/* Scoring */
+.score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:18px}
+.score-card{background:var(--surf);border:1px solid var(--bord);border-radius:var(--rl);padding:13px;text-align:center;box-shadow:var(--sh)}
+.score-val{font-size:26px;font-weight:600}
+.score-lbl{font-size:11px;color:var(--muted);margin-top:2px}
+.criteria{display:flex;flex-direction:column;gap:6px;margin-bottom:18px}
+.crit-row{display:flex;align-items:center;gap:9px;padding:9px 11px;background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);cursor:pointer;transition:background .15s;box-shadow:var(--sh)}
+.crit-row:hover{background:var(--bg)}
+.crit-lbl{flex:1;font-size:13px}
+.crit-bar{flex:2;height:3px;border-radius:2px;background:var(--bord);overflow:hidden}
+.crit-fill{height:100%;border-radius:2px;transition:width .3s}
+.crit-val{font-size:12px;font-weight:600;min-width:26px;text-align:right;color:var(--muted)}
+.crit-range{display:none;width:75px}
+/* KPIs */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:18px}
+.kpi-card{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);padding:11px 12px;box-shadow:var(--sh)}
+.kpi-label{font-size:11px;color:var(--muted);margin-bottom:5px}
+.kpi-cible{font-size:17px;font-weight:600;color:var(--blue)}
+.kpi-min{font-size:11px;color:var(--muted);margin-top:1px}
+/* History */
+.hist-item{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);padding:9px 11px;cursor:pointer;transition:background .15s;margin-bottom:5px;box-shadow:var(--sh)}
+.hist-item:hover{background:var(--bg)}
+.hist-meta{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.hist-obj{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.empty{text-align:center;padding:3rem 0;color:var(--muted);font-size:13px}
+.empty .ti{font-size:30px;display:block;margin:0 auto 8px;color:var(--light)}
+/* Divider */
+.div{height:1px;background:var(--bord);margin:18px 0}
+/* Section card */
+.sc{background:var(--surf);border:1px solid var(--bord);border-radius:var(--rl);padding:15px;margin-bottom:14px;box-shadow:var(--sh)}
+.sc-title{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:11px}
+/* Mobile */
+@media(max-width:640px){
+  .sidebar{display:none}
+  .obj-grid{grid-template-columns:1fr}
+  .ctx-grid{grid-template-columns:1fr}
+  .posture-grid{grid-template-columns:1fr}
+  .score-grid{grid-template-columns:1fr 1fr}
+  .content{padding:14px}
+  .topbar{padding:0 14px}
+  .mob-nav{display:flex!important}
+}
+.mob-nav{display:none;gap:0;border-bottom:1px solid var(--bord);background:var(--surf);overflow-x:auto;padding:0 4px}
+.mob-tab{padding:9px 11px;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;white-space:nowrap;border:none;background:none;font-family:'Inter',sans-serif;border-bottom:2px solid transparent;flex-shrink:0}
+.mob-tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-brand">Studi · Coaching CF</div>
+      <div class="sb-sub">Outil live call center</div>
+    </div>
+    <nav class="sb-nav" id="sb-nav">
+      <button class="nav-item active" onclick="switchPanel('live')"><i class="ti ti-phone-call"></i> Live appel</button>
+      <button class="nav-item" onclick="switchPanel('mindset')"><i class="ti ti-brain"></i> Mindset RRR</button>
+      <button class="nav-item" onclick="switchPanel('hook')"><i class="ti ti-hook"></i> Hook accroche</button>
+      <button class="nav-item" onclick="switchPanel('debrief')"><i class="ti ti-chart-bar"></i> Post-appel</button>
+      <button class="nav-item" onclick="switchPanel('history')"><i class="ti ti-history"></i> Historique</button>
+    </nav>
+    <div class="sb-foot" id="sb-version">v2.0 · Studi / Academee</div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-title" id="topbar-title">Live appel</div>
+      <div class="topbar-meta"><span class="status-dot"></span> IA connectée</div>
+    </header>
+    <div class="mob-nav" id="mob-nav">
+      <button class="mob-tab active" onclick="switchPanel('live')">Live</button>
+      <button class="mob-tab" onclick="switchPanel('mindset')">Mindset</button>
+      <button class="mob-tab" onclick="switchPanel('hook')">Hook</button>
+      <button class="mob-tab" onclick="switchPanel('debrief')">Post-appel</button>
+      <button class="mob-tab" onclick="switchPanel('history')">Historique</button>
+    </div>
+    <div class="content">
+
+      <!-- LIVE -->
+      <div id="panel-live" class="panel active">
+        <div class="slabel">Marché</div>
+        <div class="chips" id="marche-chips"></div>
+        <div class="ctx-grid">
+          <div><div class="flabel">Profil prospect</div><select id="ctx-profil"><option value="">Sélectionner...</option></select></div>
+          <div><div class="flabel">Stade de l'appel</div><select id="ctx-stade"><option value="">Sélectionner...</option></select></div>
+        </div>
+        <div class="slabel">Objection détectée</div>
+        <div class="obj-grid" id="obj-grid"></div>
+        <div class="flabel" style="margin-bottom:5px">Ou saisir librement</div>
+        <div class="custom-row">
+          <input type="text" id="custom-obj" placeholder="Transcrire l'objection..." onkeydown="if(event.key==='Enter')gen()">
+          <button class="btn-primary" id="gen-btn" onclick="gen()"><i class="ti ti-wand"></i> Réponse RRR</button>
+        </div>
+        <div id="response-area"></div>
+      </div>
+
+      <!-- MINDSET -->
+      <div id="panel-mindset" class="panel">
+        <div class="slabel" style="margin-bottom:11px">Framework RRR</div>
+        <div class="rrr-card">
+          <div class="rrr-row"><div class="rrr-letter r1">R</div><div class="rrr-content"><div class="rrr-label">Reconnaître</div><div class="rrr-text">Valider l'objection avec empathie — pas pour capituler, pour désarmer.</div><div class="rrr-ex">"Je comprends que vous n'ayez pas le temps à allouer à ça..."</div></div></div>
+          <div class="rrr-row"><div class="rrr-letter r2">R</div><div class="rrr-content"><div class="rrr-label">Relier</div><div class="rrr-text">Preuve sociale — ancrer dans la réalité d'autres apprenants similaires.</div><div class="rrr-ex">"Beaucoup de nos apprenants avaient une vie bien remplie avant de commencer..."</div></div></div>
+          <div class="rrr-row"><div class="rrr-letter r3">R</div><div class="rrr-content"><div class="rrr-label">Rebondir</div><div class="rrr-text">Question directe qui force un micro-engagement ou une prise de RDV.</div><div class="rrr-ex">"Vous n'avez pas 30 min demain pour qu'on vous explique comment ça s'adapte à votre emploi du temps ?"</div></div></div>
+        </div>
+        <div class="slabel" style="margin-bottom:9px">Croyances à détruire</div>
+        <div class="croyances" id="croyances-list"></div>
+        <div class="slabel" style="margin-bottom:9px">Posture leader</div>
+        <div class="posture-grid">
+          <div class="posture-card"><div class="posture-icon"><i class="ti ti-shield" style="color:var(--blue)"></i></div><div class="posture-title">Tu ne déranges pas</div><div class="posture-text">Il a rempli un formulaire. Tu réponds à un appel à l'aide, pas à froid.</div></div>
+          <div class="posture-card"><div class="posture-icon"><i class="ti ti-compass" style="color:var(--orange)"></i></div><div class="posture-title">Tu guides, tu ne supplies pas</div><div class="posture-text">Prescripteur, pas serveur. "Vous avez 2 minutes ?" = signal de faiblesse.</div></div>
+          <div class="posture-card"><div class="posture-icon"><i class="ti ti-eye" style="color:var(--yellow)"></i></div><div class="posture-title">Lis entre les lignes</div><div class="posture-text">"Je rappelle" = non poli. Un vrai intérêt trouve toujours 30 min.</div></div>
+          <div class="posture-card"><div class="posture-icon"><i class="ti ti-flame" style="color:#E24B4A"></i></div><div class="posture-title">Appelle l'éléphant</div><div class="posture-text">Si tu sens l'hésitation, dis-le. Une crainte non dite = no-show garanti.</div></div>
+        </div>
+      </div>
+
+      <!-- HOOK -->
+      <div id="panel-hook" class="panel">
+        <div class="hook-card">
+          <div style="padding:11px 13px;border-bottom:1px solid var(--bord)"><div class="sc-title" style="margin:0">Les 5 secondes critiques</div></div>
+          <div class="hook-step"><div class="hook-n">1</div><div><div class="hook-title">Prénom dès l'ouverture</div><div class="hook-ex">"Bonjour Maxime, c'est [Prénom] de Studi..."</div></div></div>
+          <div class="hook-step"><div class="hook-n">2</div><div><div class="hook-title">Sourire — ça s'entend au téléphone</div><div class="hook-ex">Ni robot, ni surexcité. Humain confiant. Énergie calibrée.</div></div></div>
+          <div class="hook-step"><div class="hook-n">3</div><div><div class="hook-title">Question ouverte immédiate</div><div class="hook-ex">"Qu'est-ce qui vous a amené à remplir notre formulaire pour [formation] ?"</div></div></div>
+          <div class="hook-step"><div class="hook-n">4</div><div><div class="hook-title">Autorité dès que c'est chaud</div><div class="hook-ex">"Par hasard vous venez de voir notre passage dans Les Echos ?"</div></div></div>
+          <div class="hook-step"><div class="hook-n">5</div><div><div class="hook-title">Gérer les interruptions sans perdre le lead</div><div class="hook-ex">"Je peux pas parler là..." → "Pas de souci, 30 secondes, et vous me dites si ça vaut le coup de continuer."</div></div></div>
+        </div>
+        <div class="sc"><div class="sc-title">Erreurs qui tuent la posture</div>
+          <div class="err-row"><i class="ti ti-x" style="color:#E24B4A;font-size:14px;flex-shrink:0;margin-top:1px"></i><span style="font-size:13px">"Vous avez 2 minutes ?" ou "Je vous dérange pas ?" → attire l'attention sur le fait que tu déranges</span></div>
+          <div class="err-row"><i class="ti ti-x" style="color:#E24B4A;font-size:14px;flex-shrink:0;margin-top:1px"></i><span style="font-size:13px">"Merci de votre réponse" → donne de l'importance à une réponse qui était logique</span></div>
+          <div class="err-row"><i class="ti ti-x" style="color:#E24B4A;font-size:14px;flex-shrink:0;margin-top:1px"></i><span style="font-size:13px">S'arrêter au premier "non" → un pro creuse, il n'a pas peur du doute</span></div>
+          <div class="err-row"><i class="ti ti-x" style="color:#E24B4A;font-size:14px;flex-shrink:0;margin-top:1px"></i><span style="font-size:13px">Donner le prix — jamais. C'est le rôle du closer. Tu brûles le RDV.</span></div>
+        </div>
+      </div>
+
+      <!-- DEBRIEF -->
+      <div id="panel-debrief" class="panel">
+        <div class="slabel" style="margin-bottom:11px">Score appel</div>
+        <div class="score-grid">
+          <div class="score-card"><div class="score-val" id="sc-global" style="color:var(--blue)">--</div><div class="score-lbl">Score global</div></div>
+          <div class="score-card"><div class="score-val" id="sc-closing" style="color:var(--orange)">--</div><div class="score-lbl">Closing</div></div>
+          <div class="score-card"><div class="score-val" id="sc-rrr" style="color:var(--yellow)">--</div><div class="score-lbl">Qualité RRR</div></div>
+        </div>
+        <div class="slabel" style="margin-bottom:7px">Critères (cliquer pour noter)</div>
+        <div class="criteria">
+          <div class="crit-row" onclick="toggleCrit(this,'assertivite')"><span class="crit-lbl">Assertivité / conviction</span><div class="crit-bar"><div class="crit-fill" id="fill-assertivite" style="width:0%;background:var(--blue)"></div></div><input type="range" class="crit-range" min="0" max="5" value="0" data-key="assertivite" oninput="updateCrit(this)"><span class="crit-val" id="crit-assertivite">-/5</span></div>
+          <div class="crit-row" onclick="toggleCrit(this,'rrr')"><span class="crit-lbl">Qualité RRR</span><div class="crit-bar"><div class="crit-fill" id="fill-rrr" style="width:0%;background:var(--orange)"></div></div><input type="range" class="crit-range" min="0" max="5" value="0" data-key="rrr" oninput="updateCrit(this)"><span class="crit-val" id="crit-rrr">-/5</span></div>
+          <div class="crit-row" onclick="toggleCrit(this,'financement')"><span class="crit-lbl">Maîtrise financement</span><div class="crit-bar"><div class="crit-fill" id="fill-financement" style="width:0%;background:var(--yellow)"></div></div><input type="range" class="crit-range" min="0" max="5" value="0" data-key="financement" oninput="updateCrit(this)"><span class="crit-val" id="crit-financement">-/5</span></div>
+          <div class="crit-row" onclick="toggleCrit(this,'closing')"><span class="crit-lbl">Tentatives de closing</span><div class="crit-bar"><div class="crit-fill" id="fill-closing" style="width:0%;background:#533AB7"></div></div><input type="range" class="crit-range" min="0" max="5" value="0" data-key="closing" oninput="updateCrit(this)"><span class="crit-val" id="crit-closing">-/5</span></div>
+          <div class="crit-row" onclick="toggleCrit(this,'urgence')"><span class="crit-lbl">Création d'urgence</span><div class="crit-bar"><div class="crit-fill" id="fill-urgence" style="width:0%;background:#E24B4A"></div></div><input type="range" class="crit-range" min="0" max="5" value="0" data-key="urgence" oninput="updateCrit(this)"><span class="crit-val" id="crit-urgence">-/5</span></div>
+        </div>
+        <div class="slabel" style="margin-bottom:9px">KPIs de référence</div>
+        <div class="kpi-grid" id="kpi-grid"></div>
+        <div class="div"></div>
+        <div class="slabel" style="margin-bottom:9px">Analyse IA post-appel</div>
+        <div style="display:flex;gap:7px;margin-bottom:13px;flex-wrap:wrap">
+          <select id="db-market" style="width:auto"><option value="LLL">LLL</option><option value="ALT">ALT</option><option value="CPF">CPF</option></select>
+          <select id="db-outcome" style="width:auto"><option value="no_sale">Pas de vente</option><option value="sale">Vente conclue</option><option value="cb">Rappel demandé</option><option value="rdv">RDV posé</option></select>
+          <button class="btn-primary" onclick="genDebrief()"><i class="ti ti-wand"></i> Analyser</button>
+        </div>
+        <div id="debrief-area"></div>
+      </div>
+
+      <!-- HISTORY -->
+      <div id="panel-history" class="panel">
+        <div class="slabel" style="margin-bottom:11px">Sessions de cet appel</div>
+        <div id="history-list"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Load config then boot app -->
+<script src="/config/content.js"></script>
+<script>
+// ---- State ----
+let market = 'LLL';
+let selObj  = '';
+let hist    = [];
+let crit    = { assertivite:0, rrr:0, financement:0, closing:0, urgence:0 };
+
+const PANELS = ['live','mindset','hook','debrief','history'];
+const TITLES  = { live:'Live appel', mindset:'Mindset & Framework RRR', hook:'Hook — accroche téléphonique', debrief:'Scoring post-appel', history:'Historique session' };
+
+// ---- Init from CONFIG ----
+function boot() {
+  const C = window.CONFIG;
+
+  // Marchés
+  const chips = document.getElementById('marche-chips');
+  C.marches.forEach((m, i) => {
+    const b = document.createElement('button');
+    b.className = 'chip' + (i === 0 ? ' active-' + m.color : '');
+    b.dataset.color = m.color;
+    b.dataset.id = m.id;
+    b.textContent = m.label;
+    b.onclick = () => {
+      market = m.id;
+      document.querySelectorAll('#marche-chips .chip').forEach(x => x.className = 'chip');
+      b.className = 'chip active-' + m.color;
+    };
+    chips.appendChild(b);
+  });
+
+  // Profils
+  const sp = document.getElementById('ctx-profil');
+  C.profils.forEach(p => { const o = document.createElement('option'); o.value = p.id; o.textContent = p.label; sp.appendChild(o); });
+
+  // Stades
+  const ss = document.getElementById('ctx-stade');
+  C.stades.forEach(s => { const o = document.createElement('option'); o.value = s.id; o.textContent = s.label; ss.appendChild(o); });
+
+  // Objections
+  const grid = document.getElementById('obj-grid');
+  C.objections.forEach(obj => {
+    const b = document.createElement('button');
+    b.className = 'obj-btn';
+    b.innerHTML = `<i class="ti ${obj.icon}"></i>${obj.label}`;
+    b.onclick = () => {
+      document.querySelectorAll('.obj-btn').forEach(x => x.classList.remove('selected'));
+      b.classList.add('selected');
+      selObj = obj.label;
+      document.getElementById('custom-obj').value = '';
+    };
+    grid.appendChild(b);
+  });
+
+  // KPIs
+  const kg = document.getElementById('kpi-grid');
+  C.kpis.forEach(k => {
+    kg.innerHTML += `<div class="kpi-card"><div class="kpi-label">${k.label}</div><div class="kpi-cible">${k.cible}${k.unite ? ' <span style="font-size:12px;color:var(--muted)">' + k.unite + '</span>' : ''}</div>${k.min !== '—' ? '<div class="kpi-min">min ' + k.min + '</div>' : ''}</div>`;
+  });
+
+  // Croyances
+  const cl = document.getElementById('croyances-list');
+  C.croyances.forEach((c, i) => {
+    cl.innerHTML += `<div class="croyance"><div class="croyance-h" onclick="toggleC(${i})"><div class="croyance-n">${i+1}</div><div class="croyance-t">${c.title}</div><i class="ti ti-chevron-down" style="font-size:13px;color:var(--light)"></i></div><div class="croyance-b" id="cb-${i}">${c.body}</div></div>`;
+  });
+}
+
+// ---- Navigation ----
+function switchPanel(p) {
+  document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach((x,i) => x.classList.toggle('active', PANELS[i] === p));
+  document.querySelectorAll('.mob-tab').forEach((x,i) => x.classList.toggle('active', PANELS[i] === p));
+  document.getElementById('panel-' + p).classList.add('active');
+  document.getElementById('topbar-title').textContent = TITLES[p];
+  if (p === 'history') renderHist();
+}
+
+function toggleC(i) { document.getElementById('cb-' + i).classList.toggle('open'); }
+
+// ---- Helpers ----
+function badgeCls(m) { return { LLL:'badge-lll', ALT:'badge-alt', CPF:'badge-cpf' }[m] || 'badge-lll'; }
+
+function getPromptCtx() {
+  const C = window.CONFIG;
+  const profil = C.profils.find(p => p.id === document.getElementById('ctx-profil').value);
+  const stade  = C.stades.find(s  => s.id === document.getElementById('ctx-stade').value);
+  return {
+    pl: profil?.prompt || 'prospect',
+    sl: stade?.prompt  || 'appel en cours',
+  };
+}
+
+function loadingHTML(obj) {
+  return `<div class="resp-card"><div class="resp-header"><span class="badge ${badgeCls(market)}">${market}</span><span class="badge badge-tag">RRR</span><span class="resp-obj">${obj}</span></div><div class="loading"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div> Génération...</div></div>`;
+}
+
+function respHTML(m, tag, obj, text) {
+  return `<div class="resp-card"><div class="resp-header"><span class="badge ${badgeCls(m)}">${m}</span><span class="badge badge-tag">${tag}</span><span class="resp-obj">${obj}</span></div><div class="resp-body" id="resp-text">${text}</div><div class="resp-actions"><button class="btn-ghost" onclick="copyResp()"><i class="ti ti-copy"></i> Copier</button><button class="btn-out" onclick="genVariante('assertif','${obj.replace(/'/g,"\\'").replace(/"/g,'')}')">+ Assertif</button><button class="btn-out" onclick="genVariante('closing','${obj.replace(/'/g,"\\'").replace(/"/g,'')}')">Hard closing</button></div></div>`;
+}
+
+async function callProxy(prompt) {
+  const res = await fetch('/api/proxy', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt, system: window.CONFIG.systemPrompt }),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  const d = await res.json();
+  return d.text || '';
+}
+
+// ---- Generate response ----
+async function gen() {
+  const custom = document.getElementById('custom-obj').value.trim();
+  const obj    = custom || selObj;
+  if (!obj) return;
+
+  const btn = document.getElementById('gen-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader-2" style="animation:spin 1s linear infinite"></i> ...';
+
+  document.getElementById('response-area').innerHTML = loadingHTML(obj);
+  const { pl, sl } = getPromptCtx();
+
+  try {
+    const prompt = `Marché ${market}. Prospect : ${pl}. Stade : ${sl}.\nObjection : "${obj}"\n\nGénère la réponse RRR. Commence directement par R1.`;
+    const text = await callProxy(prompt);
+    hist.unshift({ time: new Date(), market, objection: obj, response: text });
+    document.getElementById('response-area').innerHTML = respHTML(market, 'RRR', obj, text);
+  } catch(e) {
+    document.getElementById('response-area').innerHTML = `<div class="resp-card"><div class="resp-body" style="color:#E24B4A">Erreur : ${e.message}</div></div>`;
+  }
+  btn.disabled = false;
+  btn.innerHTML = '<i class="ti ti-wand"></i> Réponse RRR';
+}
+
+async function genVariante(type, obj) {
+  const label = type === 'assertif'
+    ? 'plus assertive et directe — forcer le passage à l\'action, ton de certitude'
+    : 'hard closing — créer l\'urgence et la rareté, prospect résistant en phase closing';
+  document.getElementById('response-area').innerHTML = loadingHTML(obj);
+  try {
+    const prompt = `Reformule cette réponse d'objection pour être ${label}. Marché ${market}. Objection : "${obj}". 4-5 phrases max. Commence directement.`;
+    const text = await callProxy(prompt);
+    document.getElementById('response-area').innerHTML = respHTML(market, type === 'assertif' ? 'Assertif' : 'Hard closing', obj, text);
+  } catch(e) {}
+}
+
+function copyResp() {
+  const t = document.getElementById('resp-text');
+  if (t) navigator.clipboard?.writeText(t.innerText).catch(() => {});
+}
+
+// ---- Scoring ----
+function toggleCrit(row, key) {
+  const r = row.querySelector('input[type=range]');
+  r.style.display = r.style.display === 'none' ? 'inline-block' : 'none';
+}
+
+function updateCrit(input) {
+  const key = input.dataset.key, val = parseInt(input.value);
+  crit[key] = val;
+  document.getElementById('crit-' + key).textContent = val + '/5';
+  document.getElementById('fill-' + key).style.width = (val / 5 * 100) + '%';
+  const vals = Object.values(crit).filter(v => v > 0);
+  if (!vals.length) return;
+  const g = Math.round(vals.reduce((a,b) => a+b, 0) / vals.length * 20);
+  document.getElementById('sc-global').textContent = g + '%';
+  document.getElementById('sc-global').style.color = g >= 70 ? '#4CAF50' : g >= 50 ? 'var(--yellow)' : '#E24B4A';
+  document.getElementById('sc-closing').textContent = crit.closing + '/5';
+  document.getElementById('sc-rrr').textContent = crit.rrr + '/5';
+}
+
+async function genDebrief() {
+  const m  = document.getElementById('db-market').value;
+  const ol = { no_sale:'aucune vente', sale:'vente conclue', cb:'rappel demandé', rdv:'RDV posé' }[document.getElementById('db-outcome').value];
+  const sc = Object.entries(crit).map(([k,v]) => `${k}: ${v}/5`).join(', ');
+  document.getElementById('debrief-area').innerHTML = `<div class="resp-card"><div class="loading"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div> Analyse...</div></div>`;
+  try {
+    const prompt = `Debrief post-appel. Marché ${m}. Résultat : ${ol}. Scores : ${sc}.\n\n3 points sans titre :\n1) Point fort principal (1 phrase concrète)\n2) Angle mort critique — le vrai problème de closing (1 phrase directe)\n3) Action concrète pour le prochain appel (1 phrase, applicable immédiatement)\n\nCommence par le point fort.`;
+    const text = await callProxy(prompt);
+    document.getElementById('debrief-area').innerHTML = `<div class="resp-card"><div class="resp-body">${text}</div></div>`;
+  } catch(e) {
+    document.getElementById('debrief-area').innerHTML = `<div class="resp-card"><div class="resp-body" style="color:#E24B4A">Erreur API.</div></div>`;
+  }
+}
+
+// ---- History ----
+function renderHist() {
+  const el = document.getElementById('history-list');
+  if (!hist.length) { el.innerHTML = '<div class="empty"><i class="ti ti-history"></i>Aucune session enregistrée.</div>'; return; }
+  el.innerHTML = hist.map((h, i) => `<div class="hist-item" onclick="reloadHist(${i})"><div class="hist-meta"><span class="badge ${badgeCls(h.market)}">${h.market}</span><span style="font-size:11px;color:var(--muted)">${h.time.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</span></div><div class="hist-obj">${h.objection}</div></div>`).join('');
+}
+
+function reloadHist(i) {
+  const h = hist[i];
+  switchPanel('live');
+  document.getElementById('custom-obj').value = h.objection;
+  document.getElementById('response-area').innerHTML = `<div class="resp-card"><div class="resp-header"><span class="badge ${badgeCls(h.market)}">${h.market}</span><span class="resp-obj">${h.objection}</span></div><div class="resp-body" id="resp-text">${h.response}</div><div class="resp-actions"><button class="btn-ghost" onclick="copyResp()"><i class="ti ti-copy"></i> Copier</button></div></div>`;
+}
+
+// Boot
+boot();
+</script>
+</body>
+</html>
